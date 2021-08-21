@@ -1,0 +1,8 @@
+__pycache__/
+slurm.sh
+slurm_out/
+saved_models/
+request_result
+genius_api_token
+saved_models/
+artists
