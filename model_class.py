@@ -54,38 +54,22 @@ class LyricGenerationModel:
     # broadcast to first dimension to 64 
     sample_tensor = tf.repeat(sample_tensor, 64, axis=0)
 
-    # predict next 1000 characters
-    # temperature is a sensitive variable to adjust prediction
     temperature = 1
-    for i in range(100):
-      pred = self.model(sample_tensor)
-      # reduce unnecessary dimensions
-      pred = pred[0].numpy()/temperature
-      pred = tf.random.categorical(pred, num_samples=1)[-1,0].numpy()
-      predicted.append(pred)
-      sample_tensor = predicted[-99:]
-      sample_tensor = tf.expand_dims([pred],0)
-      # broadcast to first dimension to 64 
-      sample_tensor = tf.repeat(sample_tensor, 64, axis=0)
+    for i in range(200):
+        predictions = self.model(sample_tensor)
+        predictions = predictions[0].numpy()/temperature
+        prediction = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
+
+        while self.id_to_word[prediction] == 'unknown_token':
+            prediction = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
+        
+        predicted.append(prediction)
+        sample_tensor = predicted[-config.seq_len+1:]
+        sample_tensor = tf.expand_dims([prediction],0)
+        # broadcast to first dimension to 64 
+        sample_tensor = tf.repeat(sample_tensor, 64, axis=0)
+
+        if self.id_to_word[prediction] == 'songend':
+            break
 
     return [self.id_to_word[i] for i in predicted]
-
-
-    """
-    input = tf.constant([self.word_to_id['songstart']])
-    input = tf.expand_dims(input, 0)
-    input = tf.repeat(input, config.batch_size, axis=0)
-
-    words_generated = ['songstart']
-    self.model.reset_states()
-    for i in range(config.num_generate):
-      predictions = self.model(input)
-      predictions = predictions[0].numpy() / config.temp 
-      predicted_id = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
-
-      words_generated.append(self.id_to_word[predicted_id])
-      
-      if self.id_to_word[predicted_id] == 'songend':
-        break
-    return words_generated
-    """
