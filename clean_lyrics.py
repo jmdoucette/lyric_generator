@@ -122,12 +122,15 @@ cleaned_lyrics = cleaned_lyrics.replace(' allright ', ' alright ')
 
 cleaned_lyrics = cleaned_lyrics.replace('\'', '')
 
-
+#filtering out songs without [verse]/[chorus] tagss
+songs = cleaned_lyrics.split('songstart')
+songs = [song for song in songs if '[verse]' in song]
+cleaned_lyrics = ' songstart '.join(songs)
 
 word_list = cleaned_lyrics.split(' ')
 word_list = [word for word in word_list if word] 
 #removing repeated newlines
-word_list = [word_list[i] for i in range(len(word_list)) if word_list[i] != 'newline' or (i > 0 and word_list[i] != word_list[i-1])]
+word_list = [word_list[i] for i in range(len(word_list)) if word_list[i] != 'newline' or (i > 0 and word_list[i-1] != 'newline')]
 map(str.strip, word_list)
 
 

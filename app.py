@@ -18,7 +18,21 @@ def display():
   else:
     model = LyricGenerationModel()
     model.load(config.current_model)
-    words_generated = model.generate_text()    
+    words_generated = model.generate_text()   
+
+    #removing leading, trailing and repeated newlines
+    first_non_newline = 0
+    for i,word in enumerate(words_generated):
+        if word != 'newline':
+            first_non_newline = i
+            break
+    last_non_newline = len(words_generated)
+    for i,word in enumerate(reversed(words_generated)):
+        if word != 'newline':
+            last_non_newline = i
+            break
+    words_generated = [words_generated[i] for i in range(len(words_generated)) if words_generated[i] != 'newline' or (i > 0 and words_generated[i-1] != 'newline')]
+ 
     
     #prettifying
     lyrics = ' '.join(words_generated)
@@ -28,6 +42,8 @@ def display():
     lyrics = lyrics.replace('[chorus]', '<br> [chorus]')
     lyrics = lyrics.replace('[verse]', '<br> [verse]')
     lyrics = lyrics.replace('[bridge]', '<br> [bridge]')
+    lyrics = lyrics.replace('[intro]', '<br> [intro]')
+    lyrics = lyrics.replace('[instrumental]', '<br> [instrumental]')
 
     return render_template('display.html', lyrics=lyrics)
   
