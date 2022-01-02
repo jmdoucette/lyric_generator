@@ -3,8 +3,8 @@ import json
 import re
 
 with open('lyrics/data/raw_lyrics', 'r') as file:
-  cleaned_lyrics = file.read()
-  
+    cleaned_lyrics = file.read()
+
 
 #replacing unicode with ascii version
 cleaned_lyrics = cleaned_lyrics.replace('\u2005', ' ')
@@ -135,7 +135,7 @@ map(str.strip, word_list)
 
 word_counts = {}
 for word in word_list:
-  word_counts[word] = word_counts.get(word, 0) + 1
+    word_counts[word] = word_counts.get(word, 0) + 1
 
 amount = 0
 count = 0
@@ -152,8 +152,8 @@ for (i, word) in enumerate(word_list):
 
 cleaned_lyrics = ' '.join(word_list)
 with open('lyrics/data/cleaned_lyrics', 'w') as file:
-  file.write(cleaned_lyrics)
+    file.write(cleaned_lyrics)
 
 word_counts = { word:count for (word,count) in sorted(word_counts.items(), key=lambda item: -1 * item[1]) if count >= config.necessary_count}
 with open('lyrics/data/word_counts.json', 'w') as file:
-  json.dump(word_counts, file)
+    json.dump(word_counts, file)
