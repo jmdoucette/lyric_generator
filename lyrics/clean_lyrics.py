@@ -2,7 +2,7 @@ import config
 import json
 import re
 
-with open('lyrics/raw_lyrics', 'r') as file:
+with open('lyrics/data/raw_lyrics', 'r') as file:
   cleaned_lyrics = file.read()
 
 
@@ -152,9 +152,9 @@ for (i, word) in enumerate(word_list):
         word_list[i] = 'unknown_token'
 
 cleaned_lyrics = ' '.join(word_list)
-with open('lyrics/cleaned_lyrics', 'w') as file:
+with open('lyrics/data/cleaned_lyrics', 'w') as file:
   file.write(cleaned_lyrics)
 
 word_counts = { word:count for (word,count) in sorted(word_counts.items(), key=lambda item: -1 * item[1]) if count >= config.necessary_count}
-with open('lyrics/word_counts.json', 'w') as file:
+with open('lyrics/data/word_counts.json', 'w') as file:
   json.dump(word_counts, file)
