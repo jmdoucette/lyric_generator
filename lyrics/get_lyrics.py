@@ -2,10 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 
 with open('genius_api_token', 'r') as file:
-  GENIUS_API_TOKEN = file.read()
+  GENIUS_API_TOKEN= file.read()
 with open('artist_ids') as file:
   artist_ids = file.read().splitlines()
-raw_lyrics_file = open('lyrics/raw_lyrics', 'w')
+raw_lyrics_file = open('lyrics/data/raw_lyrics', 'w')
 
 # getting the urls for the deisred lyrics
 lyric_urls = []

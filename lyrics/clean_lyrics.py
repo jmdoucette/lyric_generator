@@ -4,8 +4,7 @@ import re
 
 with open('lyrics/data/raw_lyrics', 'r') as file:
   cleaned_lyrics = file.read()
-
-
+  
 
 #replacing unicode with ascii version
 cleaned_lyrics = cleaned_lyrics.replace('\u2005', ' ')

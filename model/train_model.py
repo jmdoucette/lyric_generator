@@ -3,7 +3,7 @@ import tensorflow as tf
 import config
 from model_class import LyricGenerationModel
 
-with open('lyrics/cleaned_lyrics', 'r') as file:
+with open('lyrics/data/cleaned_lyrics', 'r') as file:
    word_list = file.read().split()
 
 vocab = sorted(set(word_list))
