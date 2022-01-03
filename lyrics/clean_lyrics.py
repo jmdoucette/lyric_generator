@@ -1,6 +1,10 @@
-import config
 import json
 import re
+import sys
+
+sys.path.append('..')
+import config
+
 
 with open('lyrics/data/raw_lyrics', 'r') as file:
     cleaned_lyrics = file.read()

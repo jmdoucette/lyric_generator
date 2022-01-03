@@ -1,9 +1,18 @@
 import numpy as np
 import tensorflow as tf
-import config
 from model_class import LyricGenerationModel
 
-with open('lyrics/data/cleaned_lyrics', 'r') as file:
+import os,sys
+parentdir = os.path.dirname(__file__)
+sys.path.insert(0,parentdir)
+import config
+sys.path.pop(0)
+
+
+
+
+
+with open('../lyrics/data/cleaned_lyrics', 'r') as file:
     word_list = file.read().split()
 
 vocab = sorted(set(word_list))
