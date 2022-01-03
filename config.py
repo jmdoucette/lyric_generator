@@ -9,6 +9,6 @@ epochs = 20
 
 #generation
 num_generate = 200
-temp = 0.2
-saved_models_path = "saved_models/"
-current_model = "lstm_filtered"
+temp = .7
+saved_models_path = "model/"
+current_model = "lstm_10_20"
