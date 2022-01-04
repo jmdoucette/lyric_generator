@@ -2,9 +2,6 @@ import json
 import re
 import sys
 
-sys.path.append('..')
-import config
-
 
 with open('lyrics/data/raw_lyrics', 'r') as file:
     cleaned_lyrics = file.read()
@@ -143,21 +140,22 @@ for word in word_list:
 
 amount = 0
 count = 0
+necessary_count = 10
 for word in word_counts:
-    if word_counts[word] < config.necessary_count:
+    if word_counts[word] < necessary_count:
         amount += 1
         count += word_counts[word]
-print(f'{amount} words out of {len(word_counts)} have less than {config.necessary_count} occurances.\nthere are {count} total out of {len(word_list)}')
+print(f'{amount} words out of {len(word_counts)} have less than {necessary_count} occurances.\nthere are {count} total out of {len(word_list)}')
 
 word_counts['unknown_token'] = 0
 for (i, word) in enumerate(word_list):
-    if word_counts[word] < config.necessary_count:
+    if word_counts[word] < necessary_count:
         word_list[i] = 'unknown_token'
 
 cleaned_lyrics = ' '.join(word_list)
 with open('lyrics/data/cleaned_lyrics', 'w') as file:
     file.write(cleaned_lyrics)
 
-word_counts = { word:count for (word,count) in sorted(word_counts.items(), key=lambda item: -1 * item[1]) if count >= config.necessary_count}
+word_counts = { word:count for (word,count) in sorted(word_counts.items(), key=lambda item: -1 * item[1]) if count >= necessary_count}
 with open('lyrics/data/word_counts.json', 'w') as file:
     json.dump(word_counts, file)

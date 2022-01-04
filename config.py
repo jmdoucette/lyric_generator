@@ -1,6 +1,3 @@
-#cleaning
-necessary_count = 10
-
 #training
 batch_size = 64
 buffer_size = 1000

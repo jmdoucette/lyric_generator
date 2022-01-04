@@ -1,12 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import json
-
-import os,sys
-parentdir = os.path.dirname(__file__)
-sys.path.insert(0,parentdir)
 import config
-sys.path.pop(0)
 
 
 class LyricGenerationModel:
@@ -40,13 +35,10 @@ class LyricGenerationModel:
 
 
     def load(self, name):
-        print('james', config.saved_models_path + name + '/model.h5')
-        print(os.path.abspath(os.path.expanduser(os.path.expandvars(config.saved_models_path + name + '/model.h5'))))
-
-        self.model = tf.keras.models.load_model('../' + config.saved_models_path + name + '/model.h5', custom_objects={"loss":tf.losses.SparseCategoricalCrossentropy(from_logits=True)})
-        with open('../' + config.saved_models_path + name + '/id_to_word.json', 'r') as file:
+        self.model = tf.keras.models.load_model(config.saved_models_path + name + '/model.h5', custom_objects={"loss":tf.losses.SparseCategoricalCrossentropy(from_logits=True)})
+        with open(config.saved_models_path + name + '/id_to_word.json', 'r') as file:
             self.id_to_word = id_to_word = {int(id_string):word for (id_string,word) in json.load(file).items()}
-        with open('../' + config.saved_models_path + name + '/word_to_id.json', 'r') as file:
+        with open(config.saved_models_path + name + '/word_to_id.json', 'r') as file:
             self.word_to_id = {word:int(id_string) for (word, id_string) in json.load(file).items()}
 
 

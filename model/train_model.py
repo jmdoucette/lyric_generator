@@ -1,15 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from model_class import LyricGenerationModel
-
-import os,sys
-parentdir = os.path.dirname(__file__)
-sys.path.insert(0,parentdir)
 import config
-sys.path.pop(0)
-
-
-
 
 
 with open('../lyrics/data/cleaned_lyrics', 'r') as file:
