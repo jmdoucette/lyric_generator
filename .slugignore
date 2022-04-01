@@ -1,0 +1,5 @@
+**/__pycache__/
+genius_api_token
+old_models/
+lyrics/
+.DS_Store
