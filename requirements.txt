@@ -2,5 +2,4 @@ beautifulsoup4==4.10.0
 Flask==2.0.2
 numpy==1.22.0
 requests==2.26.0
-tensorflow==2.7.0
-tensorflow_macos==0.1a3
+tensorflow==2.8.0
