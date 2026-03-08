@@ -91,10 +91,18 @@ class LyricGenerationModel:
         initial_words = ['songstart', '[intro]']
         generation = [self.word_to_id[s] for s in initial_words]
 
-        for num_generated in range(config.max_length):
+        for num_generated in range(config.max_length):                
             context = generation[-config.seq_len+1:]
             input_tensor = self.convert_context_to_input_tensor(context)
-            prediction = self.generate_next_word(input_tensor, config.temp, num_generated)
+            
+            # allowing a separate temperature for the first word to increase variety
+            # without this the first word was only ever a few values, usually unlock
+            if (num_generated == 0):
+                temp = config.first_word_temp
+            else:
+                temp = config.temp
+
+            prediction = self.generate_next_word(input_tensor, temp, num_generated)
             generation.append(prediction)
 
             if self.id_to_word[prediction] == 'songend':

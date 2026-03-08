@@ -7,6 +7,7 @@ epochs = 20
 #generation
 min_length = 100
 max_length = 200
+first_word_temp = 2
 temp = 1 # don't set this below 0.2 -- otherwise the word sampler will often get stuck on an unknown token
 saved_models_path = "model/"
 current_model = "lstm_10_20"
