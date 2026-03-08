@@ -103,8 +103,8 @@ class LyricGenerationModel:
         return [self.id_to_word[i] for i in generation]
 
 
-    def generate_next_word(self, sample_tensor, temperature):
-        predictions = self.model(sample_tensor)
+    def generate_next_word(self, input_tensor, temperature):
+        predictions = self.model(input_tensor)
         predictions = predictions[0].numpy()/config.temp
         prediction = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
 
@@ -112,7 +112,6 @@ class LyricGenerationModel:
             prediction = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
 
         return prediction
-
 
 
     def convert_context_to_input_tensor(self, context):
