@@ -89,17 +89,13 @@ class LyricGenerationModel:
         self.model.reset_states()
 
         initial_words = ['songstart', '[intro]']
-        initial_context = [self.word_to_id[s] for s in initial_words]
-
-        generation = initial_context
-        input_tensor = self.convert_context_to_input_tensor(initial_context)
+        generation = [self.word_to_id[s] for s in initial_words]
 
         for i in range(200):
-            prediction = self.generate_next_word(input_tensor, config.temp)
-            generation.append(prediction)
-
             context = generation[-config.seq_len+1:]
             input_tensor = self.convert_context_to_input_tensor(context)
+            prediction = self.generate_next_word(input_tensor, config.temp)
+            generation.append(prediction)
 
             if self.id_to_word[prediction] == 'songend':
                 break
