@@ -91,10 +91,10 @@ class LyricGenerationModel:
         initial_words = ['songstart', '[intro]']
         generation = [self.word_to_id[s] for s in initial_words]
 
-        for i in range(200):
+        for num_generated in range(config.max_length):
             context = generation[-config.seq_len+1:]
             input_tensor = self.convert_context_to_input_tensor(context)
-            prediction = self.generate_next_word(input_tensor, config.temp)
+            prediction = self.generate_next_word(input_tensor, config.temp, num_generated)
             generation.append(prediction)
 
             if self.id_to_word[prediction] == 'songend':
@@ -103,26 +103,28 @@ class LyricGenerationModel:
         return [self.id_to_word[i] for i in generation]
 
 
-    def generate_next_word(self, input_tensor, temperature):
-        skip_tokens = self.get_skip_tokens()
+    def generate_next_word(self, input_tensor, temperature, num_generated):
+        tokens_to_skip = self.get_tokens_to_skip(num_generated)
 
         predictions = self.model(input_tensor)
         predictions = predictions[0]
         predictions = predictions[-1] / temperature
 
         predictions = predictions.numpy()
-        for token in bad_tokens:
+        for token in tokens_to_skip:
             predictions[token] = -1e9
 
         prediction = tf.random.categorical([predictions], 1)[0,0].numpy()
         return prediction
 
 
-    def get_skip_tokens(self, num_generated):
-        skip_tokens = [
+    def get_tokens_to_skip(self, num_generated):
+        tokens_to_skip = [
             self.word_to_id['unknown_token']
         ]
-        return skip_tokens
+        if num_generated < config.min_length:
+            tokens_to_skip.append(self.word_to_id['songend'])
+        return tokens_to_skip
 
 
     def convert_context_to_input_tensor(self, context):
