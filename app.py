@@ -22,8 +22,7 @@ def display():
     if request.method == 'POST':
         return redirect('/display')
     else:
-        model = LyricGenerationModel()
-        model.load(config.current_model)
+        model = LyricGenerationModel.load(config.current_model)
         lyrics = model.generate_text()  
         return render_template('display.html', lyrics=lyrics)
   

@@ -5,12 +5,14 @@ import config
 
 
 class LyricGenerationModel:
-    def __init__(self):
-        self.model = None
+    def __init__(self, model, id_to_word, word_to_id):
+        self.model = model
+        self.id_to_word = id_to_word
+        self.word_to_id = word_to_id
 
-    
-    def fit(self, dataset, vocab_size, id_to_word, word_to_id):
-        self.model = tf.keras.Sequential([
+    @classmethod
+    def fit(cls, dataset, vocab_size, id_to_word, word_to_id):
+        model = tf.keras.Sequential([
         # Embed len(vocabulary) into 64 dimensions
         tf.keras.layers.Embedding(vocab_size, 64, batch_input_shape=[config.batch_size,None]),
         # LSTM RNN layers
@@ -22,8 +24,18 @@ class LyricGenerationModel:
         self.model.compile(optimizer='adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True))
         self.model.fit(dataset, epochs=config.epochs, verbose=1)
 
-        self.id_to_word = id_to_word
-        self.word_to_id = word_to_id
+        return cls(model, id_to_word, word_to_id)
+
+
+    @classmethod
+    def load(cls, name):
+        model = tf.keras.models.load_model(config.saved_models_path + name + '/model.h5', custom_objects={"loss":tf.losses.SparseCategoricalCrossentropy(from_logits=True)})
+        with open(config.saved_models_path + name + '/id_to_word.json', 'r') as file:
+            id_to_word = id_to_word = {int(id_string):word for (id_string,word) in json.load(file).items()}
+        with open(config.saved_models_path + name + '/word_to_id.json', 'r') as file:
+            word_to_id = {word:int(id_string) for (word, id_string) in json.load(file).items()}
+
+        return cls(model, id_to_word, word_to_id)
 
 
     def save(self, name):
@@ -32,14 +44,6 @@ class LyricGenerationModel:
             json.dump(self.id_to_word, file)
         with open(config.saved_models_path + name + '/word_to_id.json', 'w') as file:
             json.dump(self.word_to_id, file)
-
-
-    def load(self, name):
-        self.model = tf.keras.models.load_model(config.saved_models_path + name + '/model.h5', custom_objects={"loss":tf.losses.SparseCategoricalCrossentropy(from_logits=True)})
-        with open(config.saved_models_path + name + '/id_to_word.json', 'r') as file:
-            self.id_to_word = id_to_word = {int(id_string):word for (id_string,word) in json.load(file).items()}
-        with open(config.saved_models_path + name + '/word_to_id.json', 'r') as file:
-            self.word_to_id = {word:int(id_string) for (word, id_string) in json.load(file).items()}
 
 
     def generate_words(self):
