@@ -58,7 +58,6 @@ class LyricGenerationModel:
         # broadcast to first dimension to 64 
         sample_tensor = tf.repeat(sample_tensor, 64, axis=0)
 
-
         for i in range(200):
             predictions = self.model(sample_tensor)
             predictions = predictions[0].numpy()/config.temp
@@ -69,7 +68,7 @@ class LyricGenerationModel:
         
             predicted.append(prediction)
             sample_tensor = predicted[-config.seq_len+1:]
-            sample_tensor = tf.expand_dims([prediction],0)
+            sample_tensor = tf.expand_dims(sample_tensor,0)
             # broadcast to first dimension to 64 
             sample_tensor = tf.repeat(sample_tensor, 64, axis=0)
 
