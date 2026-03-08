@@ -10,12 +10,12 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Test generating a blues song lyrics
+The following python script can be used to generate and print song lyrics
 ```shell
 py test_generate_lyrics.py
 ```
 
-Start lyric generator flask webapp
+Start flask webapp interface for generating lyrics
 ```shell
 flask run
 ```
