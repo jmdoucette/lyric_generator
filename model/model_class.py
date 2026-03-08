@@ -46,38 +46,6 @@ class LyricGenerationModel:
             json.dump(self.word_to_id, file)
 
 
-    def generate_words(self):
-        self.model.reset_states()
-
-        sample = ['songstart', '[intro]']
-        # vectorize the string
-        sample_vector = [self.word_to_id[s] for s in sample]
-        predicted = sample_vector
-        # convert into tensor of required dimensions
-        sample_tensor = tf.expand_dims(sample_vector, 0) 
-        # broadcast to first dimension to 64 
-        sample_tensor = tf.repeat(sample_tensor, 64, axis=0)
-
-        for i in range(200):
-            predictions = self.model(sample_tensor)
-            predictions = predictions[0].numpy()/config.temp
-            prediction = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
-
-            while self.id_to_word[prediction] == 'unknown_token':
-                prediction = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
-        
-            predicted.append(prediction)
-            sample_tensor = predicted[-config.seq_len+1:]
-            sample_tensor = tf.expand_dims(sample_tensor,0)
-            # broadcast to first dimension to 64 
-            sample_tensor = tf.repeat(sample_tensor, 64, axis=0)
-
-            if self.id_to_word[prediction] == 'songend':
-                break
-
-        return [self.id_to_word[i] for i in predicted]
-
-
     def generate_text(self):
         words = self.generate_words()
         #adding spaces after section headers if not already theres
@@ -115,3 +83,44 @@ class LyricGenerationModel:
         text = text.replace('[intro]', '<br> [intro]')
         text = text.replace('[instrumental]', '<br> [instrumental]')
         return text
+
+
+    def generate_words(self):
+        self.model.reset_states()
+
+        sample = ['songstart', '[intro]']
+        # vectorize the string
+        sample_vector = [self.word_to_id[s] for s in sample]
+        predicted = sample_vector
+        # convert into tensor of required dimensions
+        sample_tensor = tf.expand_dims(sample_vector, 0) 
+        # broadcast to first dimension to 64 
+        sample_tensor = tf.repeat(sample_tensor, 64, axis=0)
+
+        for i in range(200):
+            prediction = self.generate_next_word(sample_tensor, config.temp)
+            predicted.append(prediction)
+            sample_tensor = predicted[-config.seq_len+1:]
+            sample_tensor = tf.expand_dims(sample_tensor,0)
+            # broadcast to first dimension to 64 
+            sample_tensor = tf.repeat(sample_tensor, 64, axis=0)
+
+            if self.id_to_word[prediction] == 'songend':
+                break
+
+        return [self.id_to_word[i] for i in predicted]
+
+
+    def generate_next_word(self, sample_tensor, temperature):
+        predictions = self.model(sample_tensor)
+        predictions = predictions[0].numpy()/config.temp
+        prediction = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
+
+        while self.id_to_word[prediction] == 'unknown_token':
+            prediction = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
+
+        return prediction
+
+
+
+ #   def update_sample_tensor()
