@@ -88,27 +88,23 @@ class LyricGenerationModel:
     def generate_words(self):
         self.model.reset_states()
 
-        sample = ['songstart', '[intro]']
-        # vectorize the string
-        sample_vector = [self.word_to_id[s] for s in sample]
-        predicted = sample_vector
-        # convert into tensor of required dimensions
-        sample_tensor = tf.expand_dims(sample_vector, 0) 
-        # broadcast to first dimension to 64 
-        sample_tensor = tf.repeat(sample_tensor, 64, axis=0)
+        initial_words = ['songstart', '[intro]']
+        initial_context = [self.word_to_id[s] for s in initial_words]
+
+        generation = initial_context
+        input_tensor = self.convert_context_to_input_tensor(initial_context)
 
         for i in range(200):
-            prediction = self.generate_next_word(sample_tensor, config.temp)
-            predicted.append(prediction)
-            sample_tensor = predicted[-config.seq_len+1:]
-            sample_tensor = tf.expand_dims(sample_tensor,0)
-            # broadcast to first dimension to 64 
-            sample_tensor = tf.repeat(sample_tensor, 64, axis=0)
+            prediction = self.generate_next_word(input_tensor, config.temp)
+            generation.append(prediction)
+
+            context = generation[-config.seq_len+1:]
+            input_tensor = self.convert_context_to_input_tensor(context)
 
             if self.id_to_word[prediction] == 'songend':
                 break
 
-        return [self.id_to_word[i] for i in predicted]
+        return [self.id_to_word[i] for i in generation]
 
 
     def generate_next_word(self, sample_tensor, temperature):
@@ -123,4 +119,8 @@ class LyricGenerationModel:
 
 
 
- #   def update_sample_tensor()
+    def convert_context_to_input_tensor(self, context):
+        # convert into tensor of required dimensions
+        expanded = tf.expand_dims(context, 0) 
+        # broadcast to first dimension to 64 
+        return tf.repeat(expanded, 64, axis=0)
