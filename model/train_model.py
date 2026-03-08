@@ -30,7 +30,6 @@ dataset = word_sequences.map(split_input_target)
 dataset = dataset.shuffle(config.buffer_size).batch(config.batch_size, drop_remainder=True)
 
 
-model = LyricGenerationModel()
-model.fit(dataset, vocab_size, id_to_word, word_to_id)
+model = LyricGenerationModel.fit(dataset, vocab_size, id_to_word, word_to_id)
 model.save(config.current_model)
 
