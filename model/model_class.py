@@ -104,14 +104,25 @@ class LyricGenerationModel:
 
 
     def generate_next_word(self, input_tensor, temperature):
+        skip_tokens = self.get_skip_tokens()
+
         predictions = self.model(input_tensor)
-        predictions = predictions[0].numpy()/config.temp
-        prediction = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
+        predictions = predictions[0]
+        predictions = predictions[-1] / temperature
 
-        while self.id_to_word[prediction] == 'unknown_token':
-            prediction = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
+        predictions = predictions.numpy()
+        for token in bad_tokens:
+            predictions[token] = -1e9
 
+        prediction = tf.random.categorical([predictions], 1)[0,0].numpy()
         return prediction
+
+
+    def get_skip_tokens(self, num_generated):
+        skip_tokens = [
+            self.word_to_id['unknown_token']
+        ]
+        return skip_tokens
 
 
     def convert_context_to_input_tensor(self, context):
