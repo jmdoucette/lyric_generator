@@ -2,3 +2,4 @@
 genius_api_token
 old_models/
 .DS_Store
+.venv/
